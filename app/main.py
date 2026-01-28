@@ -9,9 +9,21 @@ import logging
 import os
 import base64 # Required for encoding the PDF into JSON
 from app.agents.jd_extractor_agent import get_job_role, save_detected_role
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
 logging.basicConfig(level=logging.INFO)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://aigenxs.com", 
+        "https://agentic-ai-screening-app.onrender.com"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/screening/")
 async def upload_resume(
