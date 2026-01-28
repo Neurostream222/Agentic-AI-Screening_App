@@ -1,0 +1,32 @@
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+from app.prompts.prompts import CANDIDATE_EVALUATION_PROMPT
+import json
+
+
+client = OpenAI()
+
+def evaluate_candidate(candidate_details: str, jd: str) -> dict: 
+    prompt = CANDIDATE_EVALUATION_PROMPT.format(resume_json=candidate_details, jd_json=jd)
+    
+    try:
+        # 1. Get the response from OpenAI
+        response = client.chat.completions.create(
+            model="gpt-4o", 
+            messages=[{"role": "user", "content": prompt}],
+            response_format={ "type": "json_object" } 
+        )
+        
+        # 2. Extract the string content
+        raw_content = response.choices[0].message.content
+        
+        # 3. Parse string into a Python Dictionary
+        # Clean the response string of any markdown backticks
+        clean_content = response.choices[0].message.content.replace("```json", "").replace("```", "").strip()
+        evaluation_dict = json.loads(clean_content)
+        return evaluation_dict
+
+    except Exception as e:
+        # Always return a dict so the UI doesn't crash
+        return {"error": str(e), "resume": {"skills": []}, "candidate_status": "Error"}

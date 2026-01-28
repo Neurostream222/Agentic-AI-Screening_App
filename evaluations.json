@@ -1,0 +1,124 @@
+[
+    {
+        "timestamp": "2026-01-27 13:01:38",
+        "agent": "Resume_Agent",
+        "results": {
+            "name": "Lokesh Alapati",
+            "email": "lokeshbigdata7@gmail.com",
+            "phone": "(732)789-4569",
+            "education": "B.Tech. (Computer science & engineering) from Jawaharlal Nehru Technological University, Hyderabad, India, M.Tech. (Computer science & engineering) from Jawaharlal Nehru Technological University, Hyderabad, India",
+            "work_experience": 9,
+            "skills": [
+                "Hadoop",
+                "Spark",
+                "Python",
+                "AWS Services",
+                "Lambda",
+                "Glue",
+                "SNS",
+                "EMR",
+                "StepFunction",
+                "S3",
+                "Cloud Watch",
+                "Sqoop",
+                "Hive",
+                "Pig Latin",
+                "Unix Scripting",
+                "Postman",
+                "Splunk",
+                "DataGrip",
+                "DBeaver",
+                "Microsoft Azure",
+                "Oracle SQL",
+                "DataStage Server",
+                "UNIX",
+                "Linux",
+                "Windows",
+                "Snowflake",
+                "Teradata",
+                "MySQL",
+                "Informatica PowerCenter 9x/10x",
+                "Business Objects",
+                "Tableau",
+                "SQL",
+                "Shell Scripting",
+                "Python",
+                "AWS (S3, Lambda, EMR, Glue, Cloud Watch, EC2) and GCP (Data Proc,Compute Engine VMs, Cloud storage)",
+                "Terraform",
+                "Bitbucket",
+                "Git"
+            ],
+            "certifications": null
+        }
+    },
+    {
+        "timestamp": "2026-01-27 13:01:38",
+        "agent": "Evaluation_Agent",
+        "results": {
+            "candidate_status": "Selected",
+            "match_score": 85,
+            "experience_summary": "Lokesh Alapati has 9 years of experience, which is at the lower end of the required range but sufficient given his extensive skill set and relevant experience in cloud and big data technologies.",
+            "gap_analysis": {
+                "matched_skills": [
+                    "Hadoop",
+                    "AWS",
+                    "AWS Glue",
+                    "EMR",
+                    "Snowflake",
+                    "Hive",
+                    "Pig",
+                    "Sqoop",
+                    "Postman",
+                    "Splunk",
+                    "Oracle SQL",
+                    "Terraform",
+                    "Git",
+                    "Bitbucket",
+                    "DataGrip",
+                    "DBeaver",
+                    "Python",
+                    "SQL",
+                    "Shell Scripting"
+                ],
+                "bridgeable_gaps": [
+                    {
+                        "missing_skill": "Azure",
+                        "transferable_skill_found": "AWS",
+                        "time_to_proficiency": "2 weeks"
+                    },
+                    {
+                        "missing_skill": "GCP",
+                        "transferable_skill_found": "AWS",
+                        "time_to_proficiency": "2 weeks"
+                    },
+                    {
+                        "missing_skill": "ETL",
+                        "transferable_skill_found": "Informatica PowerCenter",
+                        "time_to_proficiency": "2 weeks"
+                    },
+                    {
+                        "missing_skill": "PySpark",
+                        "transferable_skill_found": "Spark",
+                        "time_to_proficiency": "2 weeks"
+                    },
+                    {
+                        "missing_skill": "CI/CD",
+                        "transferable_skill_found": "Terraform",
+                        "time_to_proficiency": "2 weeks"
+                    }
+                ],
+                "hard_gaps": [
+                    "HBase",
+                    "MapReduce",
+                    "Java",
+                    "JSON",
+                    "XML",
+                    "CSV",
+                    "RESTful APIs"
+                ]
+            },
+            "upskill_potential": "Lokesh has demonstrated a strong ability to learn and adapt, as evidenced by his proficiency in multiple cloud platforms and big data technologies. His experience with AWS and GCP suggests he can quickly learn Azure.",
+            "reasoning": "Lokesh Alapati is a strong candidate for the Senior Data Engineer role due to his extensive experience with cloud and big data technologies, which aligns well with the job requirements. While there are some hard gaps, his ability to quickly learn new technologies and his existing skill set make him a suitable candidate. His experience and skills cover a significant portion of the job requirements, making him a good fit for the position."
+        }
+    }
+]

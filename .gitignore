@@ -1,0 +1,11 @@
+# Python junk
+__pycache__/
+*.pyc
+.venv/
+env/
+.env
+
+# App specific
+*.pdf
+*.log
+recordings/
