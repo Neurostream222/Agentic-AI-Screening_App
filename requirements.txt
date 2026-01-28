@@ -7,5 +7,6 @@ langchain
 langchain-openai
 langchain-community
 opencv-python-headless
-uvicorn
 fpdf2
+fastapi
+uvicorn[standard]
