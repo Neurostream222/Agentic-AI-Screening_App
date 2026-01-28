@@ -32,14 +32,15 @@ def get_job_role(text: str) -> str:
 
 def save_detected_role(role_name):
     # This matches the path your orchestrator.py is looking for
-    path = r"C:\Users\somae\OneDrive\Desktop\current_role.txt"
+    path = os.path.join(os.path.dirname(__file__), "current_role.txt")
     with open(path, "w", encoding="utf-8") as f:
         f.write(role_name)
     print(f"✅ Handoff Successful: {role_name} saved to Desktop.")
 
 # --- MAIN EXECUTION LOGIC ---
 # This path must match exactly where your Screening App saves the text
-current_file_to_analyze = r"C:\Users\somae\OneDrive\Desktop\Agentic-AI-Screening_App\app\temp\latest_upload.txt"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+current_file_to_analyze = os.path.join(BASE_DIR, "temp", "latest_upload.txt")
 
 if os.path.exists(current_file_to_analyze):
     with open(current_file_to_analyze, "r", encoding="utf-8") as f:

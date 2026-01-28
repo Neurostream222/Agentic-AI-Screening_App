@@ -10,3 +10,4 @@ opencv-python-headless
 fpdf2
 fastapi
 uvicorn[standard]
+python-multipart
