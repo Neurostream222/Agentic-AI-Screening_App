@@ -87,7 +87,7 @@ if st.button("Analyze Candidate Fit"):
                     "job_description": (jd_file.name, jd_file.getvalue(), "application/pdf")
                 }
 
-                response = requests.post("http://127.0.0.1:8000/screening/", files=files)
+                response = requests.post("https://sore-pearl-aigenxs-433f8f8a.koyeb.app/screening/", files=files)
 
                 if response.status_code == 200:
                     # 2. FIX: Assign the response to the variable used in your logic
