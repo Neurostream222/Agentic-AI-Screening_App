@@ -41,7 +41,7 @@ async def upload_resume(
     # Extract just the title (e.g., "Senior Business Analyst")
     # We pass jd_extracted (the result of the AI call) into the cleaning logic
     role_title = get_job_role(jd_extracted)
-    hiring_pipeline(role_title, resume_details_extracted)
+    hiring_pipeline(role_title)
 
     # Save it to the Desktop so the Orchestrator can see it
     logger.info(f"Orchestrator will use role: {role_title}")
