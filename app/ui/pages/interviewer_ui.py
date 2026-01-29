@@ -103,6 +103,7 @@ if st.session_state.get("done"):
                     data=pdf_data,
                     file_name=f"Report_{interview_state.role}.pdf",
                     mime="application/pdf"
+                )
             else:
                 st.error("Report file was not found on the server.")
             st.balloons()
