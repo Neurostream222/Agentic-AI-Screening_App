@@ -8,6 +8,7 @@ from app.agents.candidate_evaluation import send_evaluation_email
 evaluation_result = None
 import streamlit as st
 
+st.set_page_config(page_title="Agentic AI Screening App", layout="wide")
 if 'current_page' not in st.session_state:
     st.session_state.current_page = 'landing'
  
@@ -31,7 +32,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.set_page_config(page_title="Agentic AI Screening App", layout="wide")
 st.markdown("""
     <style>
     /* Hide the top header, hamburger menu, and footer */
@@ -79,9 +79,11 @@ with col_b:
     jd_file = st.file_uploader("Upload Job Description (PDF)", type=["pdf"], key="jd_input")
 
 if st.button("Analyze Candidate Fit"):
+    success = False
     if resume_file is not None and jd_file is not None:
         with st.spinner("AI Agents are parsing files and evaluating..."):
             try:
+                role_name = jd_file.name.replace(".pdf", "")
                 data = {"role_name": role_name}
                 files = {
                     "resume": (resume_file.name, resume_file.getvalue(), "application/pdf"),
