@@ -11,3 +11,5 @@ fpdf2
 fastapi
 uvicorn[standard]
 python-multipart
+streamlit_webrtc
+prefect

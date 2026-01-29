@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from app.parsepdf import parse_pdf
 from app.agents.resume_extractor_agent import extract_resume_info
@@ -10,16 +10,14 @@ import os
 import base64 # Required for encoding the PDF into JSON
 from app.agents.jd_extractor_agent import get_job_role, save_detected_role
 from fastapi.middleware.cors import CORSMiddleware
+from app.orchestrator import hiring_pipeline
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
 logging.basicConfig(level=logging.INFO)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://aigenxs.com", 
-        "https://agentic-ai-screening-app.onrender.com"
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,7 +26,8 @@ app.add_middleware(
 @app.post("/screening/")
 async def upload_resume(
     resume: UploadFile, 
-    job_description: UploadFile
+    job_description: UploadFile,
+    role_name: str = Form(...)
 ):
     open("evaluations.json", 'w').close()  # Clear previous evaluations
     logger.info("!!! DEBUG: Request received at endpoint")
@@ -42,9 +41,11 @@ async def upload_resume(
     # Extract just the title (e.g., "Senior Business Analyst")
     # We pass jd_extracted (the result of the AI call) into the cleaning logic
     role_title = get_job_role(jd_extracted)
+    hiring_pipeline(role_title, resume_details_extracted)
 
     # Save it to the Desktop so the Orchestrator can see it
-    save_detected_role(role_title)
+    logger.info(f"Orchestrator will use role: {role_title}")
+
 
     evaluation_result = evaluate_candidate(resume_details_extracted, jd_extracted)
     

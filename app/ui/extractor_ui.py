@@ -82,12 +82,13 @@ if st.button("Analyze Candidate Fit"):
     if resume_file is not None and jd_file is not None:
         with st.spinner("AI Agents are parsing files and evaluating..."):
             try:
+                data = {"role_name": role_name}
                 files = {
                     "resume": (resume_file.name, resume_file.getvalue(), "application/pdf"),
                     "job_description": (jd_file.name, jd_file.getvalue(), "application/pdf")
                 }
 
-                response = requests.post("https://sore-pearl-aigenxs-433f8f8a.koyeb.app/screening/", files=files)
+                response = requests.post("https://sore-pearl-aigenxs-433f8f8a.koyeb.app/screening/", files=files, data=data)
 
                 if response.status_code == 200:
                     # 2. FIX: Assign the response to the variable used in your logic
