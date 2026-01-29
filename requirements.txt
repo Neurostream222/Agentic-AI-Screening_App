@@ -14,3 +14,4 @@ python-multipart
 streamlit_webrtc
 prefect
 reportlab
+pypdf
