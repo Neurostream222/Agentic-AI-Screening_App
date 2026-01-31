@@ -1,12 +1,17 @@
 import streamlit as st
-import requests
 import base64
 import sys
 import os
 
 # 1. Path setup and imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from app.agents.candidate_evaluation import send_evaluation_email
+
+# IMPORT your backend logic directly
+# Ensure app.main has the hiring_pipeline function
+try:
+    from app.main import hiring_pipeline
+except ImportError:
+    st.error("Could not find the backend logic. Check your file structure!")
 
 # 2. MUST BE THE FIRST STREAMLIT COMMAND
 st.set_page_config(page_title="Agentic AI Screening App", layout="wide")
@@ -46,35 +51,29 @@ with col_b:
     st.subheader("2. Job Description")
     jd_file = st.file_uploader("Upload Job Description (PDF)", type=["pdf"], key="jd_input")
 
+# --- ANALYSIS BLOCK ---
 if st.button("Analyze Candidate Fit"):
-    if resume_file is not None and jd_file is not None:
-        with st.spinner("AI Agents are parsing files and evaluating..."):
+    if resume_file and jd_file:
+        with st.spinner("AI Agents are analyzing directly on the server..."):
             try:
-                # FIX: Define role_name before using it in the 'data' dict
-                role_name = jd_file.name.replace(".pdf", "").replace("_", " ")
+                # Direct local call - No more 503/504 errors!
+                # Ensure hiring_pipeline returns a DICTIONARY
+                role_name = jd_file.name.replace(".pdf", "")
                 
-                data = {"role_name": role_name}
-                files = {
-                    "resume": (resume_file.name, resume_file.getvalue(), "application/pdf"),
-                    "job_description": (jd_file.name, jd_file.getvalue(), "application/pdf")
-                }
-
-                # Using your Koyeb URL as per your original code
-                response = requests.post("https://sore-pearl-aigenxs-433f8f8a.koyeb.app/screening/", files=files, data=data)
-
-                if response.status_code == 200:
-                    # Store result in session state to persist through reruns
-                    st.session_state.evaluation_result = response.json()
+                result = hiring_pipeline(role_name, resume_file, jd_file)
+                
+                if result:
+                    st.session_state.evaluation_result = result
                     st.success("Analysis complete!")
                 else:
-                    st.error(f"Backend Error: {response.status_code} - {response.text}")
-
-            except requests.exceptions.ConnectionError:
-                st.error("Could not connect to the backend. Ensure server is running.")
+                    st.error("The analysis returned no results.")
+                    
+            except Exception as e:
+                st.error(f"An error occurred during analysis: {e}")
     else:
         st.warning("Please upload both files before analyzing.")
 
-# Display results if they exist in session state
+# --- DISPLAY RESULTS ---
 if st.session_state.evaluation_result:
     res = st.session_state.evaluation_result
     st.divider()
