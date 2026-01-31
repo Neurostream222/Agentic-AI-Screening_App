@@ -56,7 +56,11 @@ async def upload_resume(
     log_agent_data(evaluation_result, "Evaluation_Agent")
 
     # 3. Generate PDF
-    pdf_path = generate_evaluation_pdf()
+    pdf_data = [
+    {"agent": "Resume_Agent", "results": resume_details_extracted},
+    {"agent": "Evaluation_Agent", "results": evaluation_result}
+    ]
+    pdf_path = generate_evaluation_pdf(pdf_data)
     
     # 4. Prepare Unified Response (JSON + PDF)
     pdf_base64 = ""
