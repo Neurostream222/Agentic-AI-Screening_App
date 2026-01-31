@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 # IMPORT your backend logic directly
 # Ensure app.main has the hiring_pipeline function
 try:
-    from app.main import run_full_screening
+    from main import run_full_screening
 except ImportError:
     st.error("Could not find the backend logic. Check your file structure!")
 
