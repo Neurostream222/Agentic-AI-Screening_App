@@ -9,7 +9,7 @@ from pypdf import PdfReader, PdfWriter
 
 def append_to_report(transcript, final_data):
     # 1. Setup Path
-    target_path = Path("C:/Users/somae/OneDrive/Desktop/Agentic-AI-Screening_App/Candidate_Report.pdf")
+    target_path = Path(__file__).parent.parent / "Candidate_Report.pdf"
     target_path.parent.mkdir(parents=True, exist_ok=True)
 
     # 2. Generate the NEW content
