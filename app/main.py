@@ -74,7 +74,7 @@ async def upload_resume(
         "pdf_base64": pdf_base64,
         "report_generated": "Candidate_Report.pdf"
     }
-def run_full_screening(resume_file, jd_file, role_name):
+def run_full_screening(resume_file, jd_file):
     # 1. Clear previous data
     open("evaluations.json", 'w').close() 
 
