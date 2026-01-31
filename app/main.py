@@ -74,3 +74,34 @@ async def upload_resume(
         "pdf_base64": pdf_base64,
         "report_generated": "Candidate_Report.pdf"
     }
+def run_full_screening(resume_file, jd_file, role_name):
+    # 1. Clear previous data
+    open("evaluations.json", 'w').close() 
+
+    # 2. Parse and Extract (Your existing logic)
+    resume_text = parse_pdf(resume_file)
+    resume_details = extract_resume_info(resume_text)
+    
+    jd_text = parse_pdf(jd_file)
+    jd_extracted = analyze_jd(jd_text)
+    
+    # 3. Handle the Orchestrator Bridge
+    role_title = get_job_role(jd_extracted)
+    hiring_pipeline(role_title) # This sends JUST the title to orchestrator.py
+
+    # 4. Evaluate and Generate PDF
+    evaluation_result = evaluate_candidate(resume_details, jd_extracted)
+    pdf_path = generate_evaluation_pdf()
+    
+    # 5. Prepare the response for Streamlit
+    pdf_base64 = ""
+    if os.path.exists(pdf_path):
+        with open(pdf_path, "rb") as f:
+            pdf_base64 = base64.b64encode(f.read()).decode('utf-8')
+
+    return {
+        "resume": resume_details,
+        "jd": jd_extracted,
+        "evaluation": evaluation_result,
+        "pdf_base64": pdf_base64
+    }

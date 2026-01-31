@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 # IMPORT your backend logic directly
 # Ensure app.main has the hiring_pipeline function
 try:
-    from app.main import hiring_pipeline
+    from app.main import run_full_screening
 except ImportError:
     st.error("Could not find the backend logic. Check your file structure!")
 
@@ -60,10 +60,8 @@ if st.button("Analyze Candidate Fit"):
                 # Ensure hiring_pipeline returns a DICTIONARY
                 role_name = jd_file.name.replace(".pdf", "")
                 
-                result = hiring_pipeline(
-                    role_title=jd_file.name, 
-                    resume_file=resume_file, 
-                    jd_file=jd_file
+                result = run_full_screening(resume_file, jd_file)
+            st.session_state.evaluation_result = result
                 )
                 if result:
                     st.session_state.evaluation_result = result
