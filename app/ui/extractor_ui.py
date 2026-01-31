@@ -61,7 +61,6 @@ if st.button("Analyze Candidate Fit"):
                 role_name = jd_file.name.replace(".pdf", "")
                 
                 result = run_full_screening(resume_file, jd_file)
-            st.session_state.evaluation_result = result
                 
                 if result:
                     st.session_state.evaluation_result = result
