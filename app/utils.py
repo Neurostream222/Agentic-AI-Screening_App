@@ -34,15 +34,15 @@ def log_agent_data(data, agent_name, filename="evaluations.json"):
     return filename
 
 # --- NEW FUNCTION TO GENERATE PDF REPORT ---
-def generate_evaluation_pdf(json_filename="evaluations.json", output_pdf="Candidate_Report.pdf"):
+def generate_evaluation_pdf(evaluation_data_list, output_pdf="Candidate_Report.pdf"):
     print(f"!!! DEBUG: Creating PDF at: {os.path.abspath(output_pdf)}", flush=True)
     try:
-        if not os.path.exists(json_filename):
-            print(f"!!! Error: {json_filename} not found")
-            return None
+        # Instead of loading from a file, we use the data passed in
+        data = evaluation_data_list 
 
-        with open(json_filename, "r") as f:
-            data = json.load(f)
+        if not data:
+            print("!!! Error: No data provided for PDF generation")
+            return None
         
         # 1. Initialize with explicit margins
         pdf = FPDF(unit='mm', format='A4')
@@ -56,13 +56,14 @@ def generate_evaluation_pdf(json_filename="evaluations.json", output_pdf="Candid
         pdf.set_font("Helvetica", size=10)
         pdf.cell(0, 10, txt=f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M')}", ln=True, align='C')
         pdf.ln(5)
+        
         usable_width = 190
         for entry in data:
             agent = entry.get("agent", "Unknown Agent")
             results = entry.get("results", {})
 
             # Section Title
-            pdf.set_x(10) # Force cursor to left margin
+            pdf.set_x(10) 
             pdf.set_fill_color(230, 230, 230)
             pdf.set_font("Helvetica", 'B', 12)
             pdf.cell(usable_width, 10, txt=f"Agent: {agent}", ln=True, fill=True)
@@ -70,22 +71,20 @@ def generate_evaluation_pdf(json_filename="evaluations.json", output_pdf="Candid
 
             if isinstance(results, dict):
                 for key, value in results.items():
-                    pdf.set_x(10) # Force cursor to left margin
+                    pdf.set_x(10) 
                     clean_key = key.replace("_", " ").title()
                     val_str = str(value).replace("[", "").replace("]", "").replace("'", "")
                     
-                    val_str = val_str.replace("’", "'").replace("‘", "'")
-                    val_str = val_str.replace("“", '"').replace("”", '"')
+                    # Clean special characters for FPDF
+                    val_str = val_str.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
                     val_str = val_str.replace("–", "-").replace("—", "-") 
-                    # Wrap text to 80 characters for safety
+                    
                     wrapped_text = textwrap.fill(val_str, width=80)
                     
-                    # 1. Key (Label)
                     pdf.set_font("Helvetica", 'B', 10)
                     pdf.multi_cell(usable_width, 7, txt=f"{clean_key}:", border=0)
                     
-                    # 2. Value (Content)
-                    pdf.set_x(10) # Reset X again before the value
+                    pdf.set_x(10) 
                     pdf.set_font("Helvetica", size=10)
                     pdf.multi_cell(usable_width, 7, txt=wrapped_text, border=0)
                     pdf.ln(2)
@@ -102,5 +101,5 @@ def generate_evaluation_pdf(json_filename="evaluations.json", output_pdf="Candid
     except Exception as e:
         print(f"Error generating PDF: {e}", flush=True)
         import traceback
-        traceback.print_exc() # This will show us EXACTLY which line failed
+        traceback.print_exc() 
         return None

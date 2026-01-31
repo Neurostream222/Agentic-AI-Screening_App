@@ -91,11 +91,15 @@ def run_full_screening(resume_file, jd_file):
 
     # 4. Evaluate and Generate PDF
     evaluation_result = evaluate_candidate(resume_details, jd_extracted)
-    pdf_path = generate_evaluation_pdf()
+    pdf_data = [
+        {"agent": "Resume_Agent", "results": resume_details},
+        {"agent": "Evaluation_Agent", "results": evaluation_result}
+    ]
+    pdf_path = generate_evaluation_pdf(pdf_data)
     
     # 5. Prepare the response for Streamlit
     pdf_base64 = ""
-    if os.path.exists(pdf_path):
+    if pdf_path and os.path.exists(pdf_path):
         with open(pdf_path, "rb") as f:
             pdf_base64 = base64.b64encode(f.read()).decode('utf-8')
 
