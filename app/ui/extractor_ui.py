@@ -3,18 +3,25 @@ import base64
 import sys
 import os
 
-# 1. Path setup and imports
+# 1. Robust Path Setup
+# Get the absolute path of the directory containing extractor_ui.py (app/ui)
 current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.abspath(os.path.join(current_dir, "../../"))
-if root_dir not in sys.path:
-    sys.path.insert(0, root_dir)
+# Get the 'app' directory (one level up)
+app_dir = os.path.dirname(current_dir)
+# Get the Project Root (two levels up)
+root_dir = os.path.dirname(app_dir)
 
-# IMPORT your backend logic directly
-# Ensure app.main has the hiring_pipeline function
+# Add both to path to be safe
+for path in [root_dir, app_dir]:
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+# DEBUG: If it fails, show us where it looked
 try:
     from app.main import run_full_screening
-except ImportError:
-    st.error("Could not find the backend logic. Check your file structure!")
+except ImportError as e:
+    st.error(f"Backend logic not found! Error: {e}")
+    st.write(f"Server is looking in: {sys.path[:3]}") # Show top 3 paths
 
 # 2. MUST BE THE FIRST STREAMLIT COMMAND
 st.set_page_config(page_title="Agentic AI Screening App", layout="wide")
