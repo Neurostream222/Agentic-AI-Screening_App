@@ -60,7 +60,7 @@ if st.button("Analyze Candidate Fit"):
                 # Ensure hiring_pipeline returns a DICTIONARY
                 role_name = jd_file.name.replace(".pdf", "")
                 
-                result = hiring_pipeline(role_name, resume_file, jd_file)
+                result = hiring_pipeline(role_name)
                 
                 if result:
                     st.session_state.evaluation_result = result
