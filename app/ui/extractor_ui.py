@@ -64,7 +64,7 @@ if st.button("Analyze Candidate Fit"):
                     role_title=jd_file.name, 
                     resume_file=resume_file, 
                     jd_file=jd_file
-                
+                )
                 if result:
                     st.session_state.evaluation_result = result
                     st.success("Analysis complete!")
