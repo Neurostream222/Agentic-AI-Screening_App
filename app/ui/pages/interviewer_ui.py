@@ -86,29 +86,30 @@ if prompt := st.chat_input("Enter your response..."):
             st.error(f"Error: {e}")
 
 # Report Generation
-# --- Updated Report Generation with Recruiter Access ---
 if st.session_state.get("done"):
     st.divider()
     st.info("Interview complete. The final report has been generated for review.")
     
-    # 1. Secret Access Field
     recruiter_code = st.text_input("Enter Recruiter Access Code to unlock download", type="password")
 
-    # 2. Trigger the Report Logic
     if st.button("📄 Prepare Final Report"):
-        if recruiter_code == "SECRET123": # <--- CHANGE THIS TO YOUR CODE
+        if recruiter_code == "SECRET123": 
             with st.spinner("Processing PDF..."):
+                # 1. Trigger the logic
                 end_res = end_interview_logic()
-                report_filename = "interview_report.pdf"
                 
-                if os.path.exists(report_filename):
-                    with open(report_filename, "rb") as f:
+                # 2. Use an absolute path to find the file in the project root
+                # This goes up levels from app/ui/pages/ to the main project folder
+                base_path = os.path.abspath(os.getcwd())
+                report_path = os.path.join(base_path, "interview_report.pdf")
+                
+                if os.path.exists(report_path):
+                    with open(report_path, "rb") as f:
                         pdf_data = f.read()
                     
                     st.balloons()
                     st.success("✅ Access Granted: Report is ready!")
                     
-                    # 3. The actual Download Button (Only visible to recruiter)
                     st.download_button(
                         label="📥 Download Full Interview Report",
                         data=pdf_data,
@@ -116,9 +117,8 @@ if st.session_state.get("done"):
                         mime="application/pdf"
                     )
                 else:
-                    st.error("Report file was not found on the server. Please check the backend path.")
-        else:
-            if recruiter_code: # If they typed the wrong code
-                st.error("🚫 Unauthorized. Please contact the administrator for the access code.")
-            else:
-                st.warning("Please enter the recruiter access code to proceed.")
+                    # Debugging: Show the app where it's looking so you can fix the backend
+                    st.error(f"File not found at: {report_path}")
+                    st.info("Ensure your backend 'end_interview_logic' saves the file to the project root.")
+        elif recruiter_code:
+            st.error("🚫 Unauthorized access code."
