@@ -121,4 +121,4 @@ if st.session_state.get("done"):
                     st.error(f"File not found at: {report_path}")
                     st.info("Ensure your backend 'end_interview_logic' saves the file to the project root.")
         elif recruiter_code:
-            st.error("🚫 Unauthorized access code."
+            st.error("🚫 Unauthorized access code.")
