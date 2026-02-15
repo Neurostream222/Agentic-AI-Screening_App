@@ -86,26 +86,39 @@ if prompt := st.chat_input("Enter your response..."):
             st.error(f"Error: {e}")
 
 # Report Generation
+# --- Updated Report Generation with Recruiter Access ---
 if st.session_state.get("done"):
-    if st.button("📄 Generate Final Report"):
-        with st.spinner("Generating PDF..."):
-            end_res = end_interview_logic()
-            report_filename = "interview_report.pdf"
-            if os.path.exists(report_filename):
-                with open(report_filename, "rb") as f:
-                    pdf_data = f.read()
+    st.divider()
+    st.info("Interview complete. The final report has been generated for review.")
+    
+    # 1. Secret Access Field
+    recruiter_code = st.text_input("Enter Recruiter Access Code to unlock download", type="password")
+
+    # 2. Trigger the Report Logic
+    if st.button("📄 Prepare Final Report"):
+        if recruiter_code == "SECRET123": # <--- CHANGE THIS TO YOUR CODE
+            with st.spinner("Processing PDF..."):
+                end_res = end_interview_logic()
+                report_filename = "interview_report.pdf"
                 
-                st.balloons()
-                st.success("✅ Report is ready for download!")
-                
-                # 3. The actual Download Button
-                st.download_button(
-                    label="📥 Download Full Interview Report",
-                    data=pdf_data,
-                    file_name=f"Report_{interview_state.role}.pdf",
-                    mime="application/pdf"
-                )
+                if os.path.exists(report_filename):
+                    with open(report_filename, "rb") as f:
+                        pdf_data = f.read()
+                    
+                    st.balloons()
+                    st.success("✅ Access Granted: Report is ready!")
+                    
+                    # 3. The actual Download Button (Only visible to recruiter)
+                    st.download_button(
+                        label="📥 Download Full Interview Report",
+                        data=pdf_data,
+                        file_name=f"Report_{interview_state.role}.pdf",
+                        mime="application/pdf"
+                    )
+                else:
+                    st.error("Report file was not found on the server. Please check the backend path.")
+        else:
+            if recruiter_code: # If they typed the wrong code
+                st.error("🚫 Unauthorized. Please contact the administrator for the access code.")
             else:
-                st.error("Report file was not found on the server.")
-            st.balloons()
-            st.success("✅ Report saved to Desktop!")
+                st.warning("Please enter the recruiter access code to proceed.")
