@@ -3,6 +3,7 @@ import cv2
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 from app.interviewer.state import interview_state
 from app.interviewer.actions import start_interview_logic, submit_answer_logic, end_interview_logic
+import os
 
 # MUST BE FIRST AND ONLY ONCE
 st.set_page_config(page_title="AI Technical Interview", page_icon="🎙️", layout="wide")
