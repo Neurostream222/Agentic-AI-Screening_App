@@ -4,6 +4,9 @@ from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 from app.interviewer.state import interview_state
 from app.interviewer.actions import start_interview_logic, submit_answer_logic, end_interview_logic
 import os
+if 'evaluation_result' not in st.session_state:
+    st.warning("⚠️ No screening data found. Please complete the initial evaluation on the home page.")
+    # Optional: st.stop() if you want to force them back
 
 # MUST BE FIRST AND ONLY ONCE
 st.set_page_config(page_title="AI Technical Interview", page_icon="🎙️", layout="wide")
@@ -93,10 +96,11 @@ if st.session_state.get("done"):
     recruiter_code = st.text_input("Enter Recruiter Access Code to unlock download", type="password")
 
     if st.button("📄 Prepare Final Report"):
+        screening_data = st.session_state.get('evaluation_result')
         if recruiter_code == "SECRET123": 
             with st.spinner("Processing PDF..."):
                 # 1. Trigger the logic
-                end_res = end_interview_logic()
+                end_res = end_interview_logic(screening_data=screening_data)
                 
                 # 2. Use an absolute path to find the file in the project root
                 # This goes up levels from app/ui/pages/ to the main project folder

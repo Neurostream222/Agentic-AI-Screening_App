@@ -67,7 +67,7 @@ def submit_answer_logic(answer_text):
         "next_question": next_question
     }
 
-def end_interview_logic():
+def end_interview_logic(screening_data=None):
     """Called by UI to finish and generate report"""
     final_prompt = "End the interview and output JSON with scores and feedback."
     
@@ -81,7 +81,7 @@ def end_interview_logic():
     final_data["role"] = interview_state.role
     
     # Note: Ensure append_to_report handles local file paths correctly on Koyeb
-    append_to_report(transcript, final_data)
+    append_to_report(transcript, final_data, screening_data=screening_data)
     
     return {"status": "completed", "data": final_data}
 def check_ai_content(transcript_data):
