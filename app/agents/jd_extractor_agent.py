@@ -39,19 +39,3 @@ def save_detected_role(role_name):
 
 # --- MAIN EXECUTION LOGIC ---
 # This path must match exactly where your Screening App saves the text
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-current_file_to_analyze = os.path.join(BASE_DIR, "temp", "latest_upload.txt")
-
-if os.path.exists(current_file_to_analyze):
-    with open(current_file_to_analyze, "r", encoding="utf-8") as f:
-        content = f.read()
-    
-    # We only run these if 'content' was successfully read
-    if content.strip():
-        detected_role = get_job_role(content)
-        save_detected_role(detected_role)
-    else:
-        print("⚠️ Warning: The file was found but it is empty.")
-else:
-    print(f"❌ Error: File not found at {current_file_to_analyze}")
-    print("Check if your Screening App is actually saving the text to that temp folder.")
