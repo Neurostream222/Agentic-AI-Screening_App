@@ -19,7 +19,7 @@ def extract_resume_info(resume_text):
             {"role": "system", "content": "You are a helpful assistant that extracts structured information from resumes."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=500,
+        max_tokens=1500,
         temperature=0.2,
     )
     print("Response from OpenAI:", response.choices[0].message.content)

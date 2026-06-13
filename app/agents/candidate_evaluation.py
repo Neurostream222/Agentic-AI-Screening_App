@@ -102,6 +102,7 @@ def evaluate_candidate(candidate_details: str, jd: str) -> dict:
 
         clean_content = response.choices[0].message.content.replace("```json", "").replace("```", "").strip()
         evaluation_dict = json.loads(clean_content)
+        print("🔍 FULL EVALUATION:", json.dumps(evaluation_dict, indent=2)) 
         status = evaluation_dict.get("candidate_status")
         json_file = "evaluations.json"
         # --- THE CONNECTION ---
