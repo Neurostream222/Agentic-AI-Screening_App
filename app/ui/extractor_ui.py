@@ -108,9 +108,9 @@ if st.session_state.evaluation_result:
         else:
             st.error(f"### Verdict: {status}")
     with m_col2:
-        st.metric("Skill Match", f"{evaluation.get('skill_match_percentage', 0)}%")
+        st.metric("Skill Match", f"{evaluation.get('match_score', 0)}%")
     with m_col3:
-        st.metric("Experience", f"{evaluation.get('experience', 0)} Years")
+        st.metric("Experience", f"{res.get('resume', {}).get('work_experience', 0)} Years")
     
     st.subheader("Evaluation Reason")
-    st.info(evaluation.get("reason", "No detailed reason provided."))
+    st.info(evaluation.get("reasoning", "No detailed reason provided."))
