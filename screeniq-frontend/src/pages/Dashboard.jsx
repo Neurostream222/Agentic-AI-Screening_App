@@ -22,7 +22,7 @@ export default function Dashboard() {
       formData.append('resume', resumeFile)
       formData.append('job_description', jdFile)
       formData.append('role_name', jdFile.name.replace('.pdf', ''))
-      const response = await fetch('http://localhost:8000/screening/', {
+      const response = await fetch('https://agentic-ai-screening-app-1.onrender.com', {
         method: 'POST',
         body: formData,
       })

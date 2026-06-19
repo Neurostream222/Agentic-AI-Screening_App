@@ -16,7 +16,7 @@ export default function Interview() {
   const startInterview = async () => {
     setLoading(true)
     try {
-      const res = await fetch('http://localhost:8000/interview/start', { method: 'POST' })
+      const res = await fetch('https://agentic-ai-screening-app-1.onrender.com/interview/start', { method: 'POST' })
       const data = await res.json()
       setMessages([{ role: 'ai', content: data.question }])
     } catch {
@@ -33,7 +33,7 @@ export default function Interview() {
     setMessages(prev => [...prev, { role: 'user', content: answer }])
     setLoading(true)
     try {
-      const res = await fetch('http://localhost:8000/interview/answer', {
+      const res = await fetch('https://agentic-ai-screening-app-1.onrender.com/interview/answer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ answer })
