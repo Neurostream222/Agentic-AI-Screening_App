@@ -11,6 +11,7 @@ import base64 # Required for encoding the PDF into JSON
 from app.agents.jd_extractor_agent import get_job_role, save_detected_role
 from fastapi.middleware.cors import CORSMiddleware
 from app.orchestrator import hiring_pipeline
+from app.interviewer.api import router as interview_router
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
 logging.basicConfig(level=logging.INFO)
@@ -22,7 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+app.include_router(interview_router, prefix="/interview")
 @app.post("/screening/")
 async def upload_resume(
     resume: UploadFile, 

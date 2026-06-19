@@ -14,12 +14,12 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 def extract_resume_info(resume_text):
     prompt=RESUME_EXTRACTION_PROMPT.format(resume_text=resume_text)
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that extracts structured information from resumes."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=1500,
+        max_tokens=800,
         temperature=0.2,
     )
     print("Response from OpenAI:", response.choices[0].message.content)
