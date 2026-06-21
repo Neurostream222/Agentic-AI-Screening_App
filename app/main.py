@@ -12,6 +12,7 @@ from app.agents.jd_extractor_agent import get_job_role, save_detected_role
 from fastapi.middleware.cors import CORSMiddleware
 from app.orchestrator import hiring_pipeline
 from app.interviewer.api import router as interview_router
+import json
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
 logging.basicConfig(level=logging.INFO)
