@@ -125,3 +125,30 @@ def evaluate_candidate(candidate_details: str, jd: str) -> dict:
             print(f"!!! CRITICAL ERROR: {e}") 
         
             return {"error": str(e), "resume": {"skills": []}, "candidate_status": "Error"}
+def compare_candidates(candidates: list, jd: str) -> dict:
+    from app.prompts.prompts import HEAD_TO_HEAD_PROMPT
+    candidates_json = json.dumps([{
+        "name": c["name"],
+        "match_score": c["score"],
+        "scorecard": c.get("scorecard", {}),
+        "red_flags": c.get("red_flags", []),
+        "experience": c.get("experience", 0),
+        "reasoning": c.get("reasoning", ""),
+    } for c in candidates], indent=2)
+
+    prompt = HEAD_TO_HEAD_PROMPT.format(
+        jd_json=jd,
+        candidates_json=candidates_json
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+            temperature=0
+        )
+        return json.loads(response.choices[0].message.content)
+    except Exception as e:
+        print(f"Head-to-head comparison failed: {e}")
+        return {"final_ranking": [], "recruiter_note": ""}

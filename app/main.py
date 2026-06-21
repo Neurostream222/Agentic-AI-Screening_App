@@ -84,6 +84,9 @@ async def rank_candidates(
     resumes: list[UploadFile] = File(...),
     job_description: UploadFile = File(...),
 ):
+    from app.agents.candidate_evaluation import compare_candidates
+    import re
+
     jd_text = parse_pdf(job_description.file)
     jd_extracted = analyze_jd(jd_text)
 
@@ -96,7 +99,6 @@ async def rank_candidates(
         parsed_resume = resume_details
         if isinstance(resume_details, dict) and resume_details.get('error'):
             try:
-                import re
                 cleaned = re.sub(r'```json\n?|```', '', resume_details['raw_payload']).strip()
                 parsed_resume = json.loads(cleaned)
             except:
@@ -108,15 +110,31 @@ async def rank_candidates(
             "verdict": evaluation.get('candidate_status', 'Unknown'),
             "reasoning": evaluation.get('reasoning', ''),
             "experience": parsed_resume.get('work_experience', 0),
+            "scorecard": evaluation.get('scorecard', {}),
+            "red_flags": evaluation.get('red_flags', []),
+            "interview_questions": evaluation.get('interview_questions', []),
             "matched_skills": evaluation.get('gap_analysis', {}).get('matched_skills', []),
             "hard_gaps": evaluation.get('gap_analysis', {}).get('hard_gaps', []),
+            "upskill_potential": evaluation.get('upskill_potential', ''),
         })
 
     results.sort(key=lambda x: x['score'], reverse=True)
-    for i, r in enumerate(results):
-        r['rank'] = i + 1
 
-    return {"ranked_candidates": results}
+    # Head-to-head comparison pass
+    comparison = compare_candidates(results, jd_extracted)
+    ranking_map = {r['name']: r for r in comparison.get('final_ranking', [])}
+    for c in results:
+        meta = ranking_map.get(c['name'], {})
+        c['rank'] = meta.get('rank', results.index(c) + 1)
+        c['decisive_reason'] = meta.get('decisive_reason', '')
+        c['hire_confidence'] = meta.get('hire_confidence', 'Medium')
+
+    results.sort(key=lambda x: x['rank'])
+
+    return {
+        "ranked_candidates": results,
+        "recruiter_note": comparison.get('recruiter_note', '')
+    }
 def run_full_screening(resume_file, jd_file):
     # 1. Clear previous data
     open("evaluations.json", 'w').close() 
