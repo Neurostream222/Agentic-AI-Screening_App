@@ -107,17 +107,16 @@ def evaluate_candidate(candidate_details: str, jd: str) -> dict:
         json_file = "evaluations.json"
         # --- THE CONNECTION ---
 
-        if status == "Selected":
-            candidate_email = "clickshivas@gmail.com" 
-            candidate_name = "Candidate" 
-    
-            send_document_request_email(candidate_email, candidate_name)
-        else:
-            print("Candidate rejected; no document request sent.")
+        try:
+            if status == "Selected":
+                send_document_request_email("clickshivas@gmail.com", "Candidate")
+        except Exception as e:
+            print(f"Document email skipped: {e}")
 
-        
-        # 3. Send the email
-        send_evaluation_email(json_file, evaluation_dict)
+        try:
+            send_evaluation_email(json_file, evaluation_dict)
+        except Exception as e:
+            print(f"Evaluation email skipped: {e}")
 
         return evaluation_dict
 
