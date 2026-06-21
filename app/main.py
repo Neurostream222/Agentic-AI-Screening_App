@@ -13,6 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.orchestrator import hiring_pipeline
 from app.interviewer.api import router as interview_router
 import json
+from typing import List
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
 logging.basicConfig(level=logging.INFO)
@@ -81,8 +82,9 @@ async def upload_resume(
         "report_generated": "Candidate_Report.pdf"
     }
 @app.post("/ranking/")
+from typing import List
 async def rank_candidates(
-    resumes: list[UploadFile] = File(...),
+    resumes: List[UploadFile] = File(...),
     job_description: UploadFile = File(...),
 ):
     from app.agents.candidate_evaluation import compare_candidates
