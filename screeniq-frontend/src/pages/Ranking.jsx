@@ -222,7 +222,7 @@ export default function Ranking() {
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 14, background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.1)', cursor: 'pointer' }}>
                   <Plus size={16} color="#475569" />
                   <span style={{ fontSize: 13, color: '#475569' }}>Add resume PDFs</span>
-                  <input id="resumes-input" type="file" accept=".pdf" multiple hidden onChange={e => addResumes(e.target.files)} />
+                  <input id="resumes-input" type="file" accept=".pdf,.docx" multiple hidden onChange={e => addResumes(e.target.files)} />
                 </div>
               </div>
             </div>
@@ -234,7 +234,7 @@ export default function Ranking() {
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', borderRadius: 14, background: jdFile ? 'rgba(59,130,246,0.07)' : 'rgba(255,255,255,0.02)', border: jdFile ? '1px solid rgba(59,130,246,0.2)' : '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }}>
                   {jdFile ? <CheckCircle size={18} color="#60A5FA" /> : <FileText size={18} color="#475569" />}
                   <span style={{ fontSize: 13, color: jdFile ? '#60A5FA' : '#475569' }}>{jdFile ? jdFile.name : 'Click to upload PDF (optional)'}</span>
-                  <input id="jd-rank-input" type="file" accept=".pdf" hidden onChange={e => { setJdFile(e.target.files[0]); setJdText('') }} />
+                  <input id="jd-rank-input" type="file" accept=".pdf,.docx" hidden onChange={e => { setJdFile(e.target.files[0]); setJdText('') }} />
                 </div>
                 <textarea
                   value={jdText}

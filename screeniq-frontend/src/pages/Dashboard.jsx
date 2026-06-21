@@ -149,7 +149,7 @@ export default function Dashboard() {
                       </span>
                     )}
                   </div>
-                  <input id="resume-input" type="file" accept=".pdf" className="hidden"
+                  <input id="resume-input" type="file" accept=".pdf,.docx" className="hidden"
                     onChange={e => setResumeFile(e.target.files[0])} />
                 </div>
 
@@ -184,7 +184,7 @@ export default function Dashboard() {
                         </span>
                       )}
                     </div>
-                    <input id="jd-input" type="file" accept=".pdf" className="hidden"
+                    <input id="jd-input" type="file" accept=".pdf,.docx" className="hidden"
                       onChange={e => { setJdFile(e.target.files[0]); setJdText('') }} />
                   </div>
 
