@@ -3,7 +3,7 @@ import Landing from './pages/Landing'
 import Dashboard from './pages/Dashboard'
 import Results from './pages/Results'
 import Interview from './pages/Interview'
-
+import Ranking from './pages/Ranking'
 export default function App() {
   return (
     <BrowserRouter>
@@ -12,6 +12,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/results" element={<Results />} />
         <Route path="/interview" element={<Interview />} />
+        <Route path="/ranking" element={<Ranking />} />
       </Routes>
     </BrowserRouter>
   )

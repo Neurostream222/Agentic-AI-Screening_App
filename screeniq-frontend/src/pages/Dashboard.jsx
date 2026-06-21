@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Brain, Upload, FileText, Loader2, CheckCircle, ArrowRight, LayoutDashboard, Clock, Settings, Plus } from 'lucide-react'
+import { Brain, Upload, FileText, Loader2, CheckCircle, ArrowRight, LayoutDashboard, Clock, Settings, Plus, Trophy } from 'lucide-react'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -55,8 +55,12 @@ export default function Dashboard() {
             { icon: <LayoutDashboard size={16} />, label: 'Dashboard', id: 'new' },
             { icon: <Clock size={16} />, label: 'History', id: 'history' },
             { icon: <Settings size={16} />, label: 'Settings', id: 'settings' },
+            { icon: <Trophy size={16} />, label: 'Rank Candidates', id: 'ranking' },
           ].map(item => (
-            <button key={item.id} onClick={() => setActiveTab(item.id)}
+            <button key={item.id} onClick={() => {
+              if (item.id === 'ranking') { navigate('/ranking'); return }
+                setActiveTab(item.id)
+              }}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
               style={{
                 background: activeTab === item.id ? 'rgba(59,130,246,0.1)' : 'transparent',

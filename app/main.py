@@ -79,6 +79,44 @@ async def upload_resume(
         "pdf_base64": pdf_base64,
         "report_generated": "Candidate_Report.pdf"
     }
+@app.post("/ranking/")
+async def rank_candidates(
+    resumes: list[UploadFile] = File(...),
+    job_description: UploadFile = File(...),
+):
+    jd_text = parse_pdf(job_description.file)
+    jd_extracted = analyze_jd(jd_text)
+
+    results = []
+    for resume in resumes:
+        resume_text = parse_pdf(resume.file)
+        resume_details = extract_resume_info(resume_text)
+        evaluation = evaluate_candidate(resume_details, jd_extracted)
+
+        parsed_resume = resume_details
+        if isinstance(resume_details, dict) and resume_details.get('error'):
+            try:
+                import re
+                cleaned = re.sub(r'```json\n?|```', '', resume_details['raw_payload']).strip()
+                parsed_resume = json.loads(cleaned)
+            except:
+                parsed_resume = {}
+
+        results.append({
+            "name": parsed_resume.get('name', resume.filename),
+            "score": evaluation.get('match_score', 0),
+            "verdict": evaluation.get('candidate_status', 'Unknown'),
+            "reasoning": evaluation.get('reasoning', ''),
+            "experience": parsed_resume.get('work_experience', 0),
+            "matched_skills": evaluation.get('gap_analysis', {}).get('matched_skills', []),
+            "hard_gaps": evaluation.get('gap_analysis', {}).get('hard_gaps', []),
+        })
+
+    results.sort(key=lambda x: x['score'], reverse=True)
+    for i, r in enumerate(results):
+        r['rank'] = i + 1
+
+    return {"ranked_candidates": results}
 def run_full_screening(resume_file, jd_file):
     # 1. Clear previous data
     open("evaluations.json", 'w').close() 
