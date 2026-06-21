@@ -6,6 +6,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [resumeFile, setResumeFile] = useState(null)
   const [jdFile, setJdFile] = useState(null)
+  const [jdText, setJdText] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState('new')
@@ -14,14 +15,19 @@ export default function Dashboard() {
   })
 
   const handleSubmit = async () => {
-    if (!resumeFile || !jdFile) return
+    if (!resumeFile || (!jdFile && !jdText.trim())) return
     setLoading(true)
     setError(null)
     try {
       const formData = new FormData()
       formData.append('resume', resumeFile)
-      formData.append('job_description', jdFile)
-      formData.append('role_name', jdFile.name.replace('.pdf', ''))
+      if (jdFile) {
+        formData.append('job_description', jdFile)
+      } else {
+        const blob = new Blob([jdText], { type: 'text/plain' })
+        formData.append('job_description', blob, 'job_description.txt')
+      }
+      formData.append('role_name', jdFile ? jdFile.name.replace('.pdf', '') : 'Role')
       const response = await fetch('https://agentic-ai-screening-app-1.onrender.com/screening/', {
         method: 'POST',
         body: formData,
@@ -54,13 +60,13 @@ export default function Dashboard() {
           {[
             { icon: <LayoutDashboard size={16} />, label: 'Dashboard', id: 'new' },
             { icon: <Clock size={16} />, label: 'History', id: 'history' },
-            { icon: <Settings size={16} />, label: 'Settings', id: 'settings' },
             { icon: <Trophy size={16} />, label: 'Rank Candidates', id: 'ranking' },
+            { icon: <Settings size={16} />, label: 'Settings', id: 'settings' },
           ].map(item => (
             <button key={item.id} onClick={() => {
               if (item.id === 'ranking') { navigate('/ranking'); return }
-                setActiveTab(item.id)
-              }}
+              setActiveTab(item.id)
+            }}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
               style={{
                 background: activeTab === item.id ? 'rgba(59,130,246,0.1)' : 'transparent',
@@ -112,6 +118,8 @@ export default function Dashboard() {
           {activeTab === 'new' && (
             <div className="max-w-xl">
               <div className="space-y-3 mb-6">
+
+                {/* Resume upload */}
                 <div onClick={() => document.getElementById('resume-input').click()}
                   className="cursor-pointer rounded-2xl p-6 transition-all duration-200"
                   style={{
@@ -145,37 +153,57 @@ export default function Dashboard() {
                     onChange={e => setResumeFile(e.target.files[0])} />
                 </div>
 
-                <div onClick={() => document.getElementById('jd-input').click()}
-                  className="cursor-pointer rounded-2xl p-6 transition-all duration-200"
-                  style={{
-                    background: jdFile ? 'rgba(59,130,246,0.07)' : 'rgba(255,255,255,0.02)',
-                    border: jdFile ? '1px solid rgba(59,130,246,0.3)' : '1px solid rgba(255,255,255,0.07)',
-                  }}
-                  onMouseEnter={e => { if (!jdFile) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.15)' }}
-                  onMouseLeave={e => { if (!jdFile) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.07)' }}>
-                  <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                      style={{
-                        background: jdFile ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.04)',
-                        border: jdFile ? '1px solid rgba(59,130,246,0.2)' : '1px solid rgba(255,255,255,0.08)',
-                      }}>
-                      {jdFile ? <CheckCircle size={20} style={{ color: '#60A5FA' }} /> : <FileText size={20} style={{ color: '#475569' }} />}
+                {/* JD upload or paste */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div onClick={() => document.getElementById('jd-input').click()}
+                    className="cursor-pointer rounded-2xl p-6 transition-all duration-200"
+                    style={{
+                      background: jdFile ? 'rgba(59,130,246,0.07)' : 'rgba(255,255,255,0.02)',
+                      border: jdFile ? '1px solid rgba(59,130,246,0.3)' : '1px solid rgba(255,255,255,0.07)',
+                    }}
+                    onMouseEnter={e => { if (!jdFile) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.15)' }}
+                    onMouseLeave={e => { if (!jdFile) e.currentTarget.style.border = '1px solid rgba(255,255,255,0.07)' }}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                        style={{
+                          background: jdFile ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.04)',
+                          border: jdFile ? '1px solid rgba(59,130,246,0.2)' : '1px solid rgba(255,255,255,0.08)',
+                        }}>
+                        {jdFile ? <CheckCircle size={20} style={{ color: '#60A5FA' }} /> : <FileText size={20} style={{ color: '#475569' }} />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm mb-0.5">Job Description</p>
+                        <p className="text-xs truncate" style={{ color: jdFile ? '#60A5FA' : '#475569' }}>
+                          {jdFile ? jdFile.name : 'Click to upload PDF (optional)'}
+                        </p>
+                      </div>
+                      {jdFile && (
+                        <span className="text-xs px-2.5 py-1 rounded-full shrink-0"
+                          style={{ background: 'rgba(34,197,94,0.1)', color: '#4ADE80', border: '1px solid rgba(34,197,94,0.2)' }}>
+                          Ready
+                        </span>
+                      )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm mb-0.5">Job Description</p>
-                      <p className="text-xs truncate" style={{ color: jdFile ? '#60A5FA' : '#475569' }}>
-                        {jdFile ? jdFile.name : 'Click to upload PDF'}
-                      </p>
-                    </div>
-                    {jdFile && (
-                      <span className="text-xs px-2.5 py-1 rounded-full shrink-0"
-                        style={{ background: 'rgba(34,197,94,0.1)', color: '#4ADE80', border: '1px solid rgba(34,197,94,0.2)' }}>
-                        Ready
-                      </span>
-                    )}
+                    <input id="jd-input" type="file" accept=".pdf" className="hidden"
+                      onChange={e => { setJdFile(e.target.files[0]); setJdText('') }} />
                   </div>
-                  <input id="jd-input" type="file" accept=".pdf" className="hidden"
-                    onChange={e => setJdFile(e.target.files[0])} />
+
+                  <textarea
+                    value={jdText}
+                    onChange={e => { setJdText(e.target.value); setJdFile(null) }}
+                    placeholder="...or paste the job description text here"
+                    rows={4}
+                    style={{
+                      width: '100%', boxSizing: 'border-box',
+                      background: jdText ? 'rgba(59,130,246,0.05)' : 'rgba(255,255,255,0.02)',
+                      border: jdText ? '1px solid rgba(59,130,246,0.25)' : '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: 16, padding: '14px 16px', fontSize: 13,
+                      color: 'white', resize: 'vertical', outline: 'none',
+                      fontFamily: 'Inter, sans-serif', lineHeight: 1.6,
+                    }}
+                    onFocus={e => e.target.style.border = '1px solid rgba(59,130,246,0.4)'}
+                    onBlur={e => e.target.style.border = jdText ? '1px solid rgba(59,130,246,0.25)' : '1px solid rgba(255,255,255,0.07)'}
+                  />
                 </div>
               </div>
 
@@ -186,9 +214,9 @@ export default function Dashboard() {
                 </div>
               )}
 
-              <button onClick={handleSubmit} disabled={!resumeFile || !jdFile || loading}
+              <button onClick={handleSubmit} disabled={!resumeFile || (!jdFile && !jdText.trim()) || loading}
                 className="w-full flex items-center justify-center gap-2 text-white font-semibold py-3.5 rounded-2xl transition text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #2563EB, #4F46E5)', boxShadow: (!resumeFile || !jdFile) ? 'none' : '0 8px 32px rgba(59,130,246,0.25)' }}>
+                style={{ background: 'linear-gradient(135deg, #2563EB, #4F46E5)', boxShadow: (!resumeFile || (!jdFile && !jdText.trim())) ? 'none' : '0 8px 32px rgba(59,130,246,0.25)' }}>
                 {loading ? <><Loader2 size={16} className="animate-spin" /> Analyzing...</> : <>Analyze Candidate Fit <ArrowRight size={16} /></>}
               </button>
 

@@ -29,8 +29,6 @@ function CandidateCard({ c, index }) {
 
   return (
     <div style={{ borderRadius: 18, background: 'rgba(255,255,255,0.02)', border: c.rank === 1 ? '1px solid rgba(245,158,11,0.25)' : '1px solid rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-
-      {/* Header */}
       <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => setExpanded(!expanded)}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 15, color: rankColor, border: `1px solid ${rankColor}44`, background: `${rankColor}11`, flexShrink: 0 }}>
@@ -48,7 +46,6 @@ function CandidateCard({ c, index }) {
             </div>
           </div>
         </div>
-
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ textAlign: 'right' }}>
             <p style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(90deg, #60A5FA, #818CF8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1 }}>{c.score}%</p>
@@ -63,8 +60,6 @@ function CandidateCard({ c, index }) {
 
       {expanded && (
         <div style={{ padding: '0 24px 24px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 20 }}>
-
-          {/* Decisive reason */}
           {c.decisive_reason && (
             <div style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.15)', marginBottom: 20 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: '#3B82F6', marginBottom: 4 }}>Recruiter take</p>
@@ -73,8 +68,6 @@ function CandidateCard({ c, index }) {
           )}
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
-
-            {/* Scorecard */}
             {c.scorecard && Object.keys(c.scorecard).length > 0 && (
               <div>
                 <p style={{ fontSize: 11, fontWeight: 600, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Scorecard</p>
@@ -84,8 +77,6 @@ function CandidateCard({ c, index }) {
                 <ScoreBar label="Communication" value={c.scorecard.communication_score ?? 0} />
               </div>
             )}
-
-            {/* Matched skills */}
             <div>
               <p style={{ fontSize: 11, fontWeight: 600, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Matched skills</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -95,7 +86,6 @@ function CandidateCard({ c, index }) {
                 {c.matched_skills?.length > 8 && <span style={{ fontSize: 11, color: '#334155' }}>+{c.matched_skills.length - 8} more</span>}
                 {!c.matched_skills?.length && <p style={{ fontSize: 12, color: '#334155' }}>None identified</p>}
               </div>
-
               {c.hard_gaps?.length > 0 && (
                 <div style={{ marginTop: 14 }}>
                   <p style={{ fontSize: 11, fontWeight: 600, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Hard gaps</p>
@@ -109,7 +99,6 @@ function CandidateCard({ c, index }) {
             </div>
           </div>
 
-          {/* Red flags */}
           {c.red_flags?.length > 0 && (
             <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.12)', marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -124,7 +113,6 @@ function CandidateCard({ c, index }) {
             </div>
           )}
 
-          {/* Reasoning */}
           {c.reasoning && (
             <div style={{ marginBottom: 20 }}>
               <p style={{ fontSize: 11, fontWeight: 600, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Reasoning</p>
@@ -132,7 +120,6 @@ function CandidateCard({ c, index }) {
             </div>
           )}
 
-          {/* Interview questions */}
           {c.interview_questions?.length > 0 && (
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
@@ -156,6 +143,7 @@ export default function Ranking() {
   const navigate = useNavigate()
   const [resumeFiles, setResumeFiles] = useState([])
   const [jdFile, setJdFile] = useState(null)
+  const [jdText, setJdText] = useState('')
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState(null)
   const [recruiterNote, setRecruiterNote] = useState('')
@@ -165,13 +153,18 @@ export default function Ranking() {
   const removeResume = (i) => setResumeFiles(prev => prev.filter((_, idx) => idx !== i))
 
   const handleSubmit = async () => {
-    if (resumeFiles.length < 2 || !jdFile) return
+    if (resumeFiles.length < 2 || (!jdFile && !jdText.trim())) return
     setLoading(true)
     setError(null)
     try {
       const formData = new FormData()
       resumeFiles.forEach(f => formData.append('resumes', f))
-      formData.append('job_description', jdFile)
+      if (jdFile) {
+        formData.append('job_description', jdFile)
+      } else {
+        const blob = new Blob([jdText], { type: 'text/plain' })
+        formData.append('job_description', blob, 'job_description.txt')
+      }
       const res = await fetch('https://agentic-ai-screening-app-1.onrender.com/ranking/', {
         method: 'POST',
         body: formData,
@@ -234,19 +227,38 @@ export default function Ranking() {
               </div>
             </div>
 
-            <div style={{ marginBottom: 24 }} onClick={() => document.getElementById('jd-rank-input').click()}>
+            <div style={{ marginBottom: 24 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Job Description</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px', borderRadius: 14, background: jdFile ? 'rgba(59,130,246,0.07)' : 'rgba(255,255,255,0.02)', border: jdFile ? '1px solid rgba(59,130,246,0.2)' : '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }}>
-                {jdFile ? <CheckCircle size={18} color="#60A5FA" /> : <FileText size={18} color="#475569" />}
-                <span style={{ fontSize: 13, color: jdFile ? '#60A5FA' : '#475569' }}>{jdFile ? jdFile.name : 'Click to upload JD PDF'}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div onClick={() => document.getElementById('jd-rank-input').click()}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', borderRadius: 14, background: jdFile ? 'rgba(59,130,246,0.07)' : 'rgba(255,255,255,0.02)', border: jdFile ? '1px solid rgba(59,130,246,0.2)' : '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }}>
+                  {jdFile ? <CheckCircle size={18} color="#60A5FA" /> : <FileText size={18} color="#475569" />}
+                  <span style={{ fontSize: 13, color: jdFile ? '#60A5FA' : '#475569' }}>{jdFile ? jdFile.name : 'Click to upload PDF (optional)'}</span>
+                  <input id="jd-rank-input" type="file" accept=".pdf" hidden onChange={e => { setJdFile(e.target.files[0]); setJdText('') }} />
+                </div>
+                <textarea
+                  value={jdText}
+                  onChange={e => { setJdText(e.target.value); setJdFile(null) }}
+                  placeholder="...or paste the job description text here"
+                  rows={4}
+                  style={{
+                    width: '100%', boxSizing: 'border-box',
+                    background: jdText ? 'rgba(59,130,246,0.05)' : 'rgba(255,255,255,0.02)',
+                    border: jdText ? '1px solid rgba(59,130,246,0.25)' : '1px solid rgba(255,255,255,0.07)',
+                    borderRadius: 14, padding: '14px 16px', fontSize: 13,
+                    color: 'white', resize: 'vertical', outline: 'none',
+                    fontFamily: 'Inter, sans-serif', lineHeight: 1.6,
+                  }}
+                  onFocus={e => e.target.style.border = '1px solid rgba(59,130,246,0.4)'}
+                  onBlur={e => e.target.style.border = jdText ? '1px solid rgba(59,130,246,0.25)' : '1px solid rgba(255,255,255,0.07)'}
+                />
               </div>
-              <input id="jd-rank-input" type="file" accept=".pdf" hidden onChange={e => setJdFile(e.target.files[0])} />
             </div>
 
             {error && <div style={{ fontSize: 13, padding: '12px 16px', borderRadius: 12, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', color: '#F87171', marginBottom: 16 }}>{error}</div>}
 
-            <button onClick={handleSubmit} disabled={resumeFiles.length < 2 || !jdFile || loading}
-              style={{ width: '100%', padding: '14px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg, #2563EB, #4F46E5)', color: 'white', fontWeight: 600, fontSize: 14, cursor: resumeFiles.length < 2 || !jdFile || loading ? 'not-allowed' : 'pointer', opacity: resumeFiles.length < 2 || !jdFile ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <button onClick={handleSubmit} disabled={resumeFiles.length < 2 || (!jdFile && !jdText.trim()) || loading}
+              style={{ width: '100%', padding: '14px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg, #2563EB, #4F46E5)', color: 'white', fontWeight: 600, fontSize: 14, cursor: resumeFiles.length < 2 || (!jdFile && !jdText.trim()) || loading ? 'not-allowed' : 'pointer', opacity: resumeFiles.length < 2 || (!jdFile && !jdText.trim()) ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
               {loading ? <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Ranking candidates...</> : <><Trophy size={16} /> Rank Candidates</>}
             </button>
             {loading && <p style={{ textAlign: 'center', fontSize: 12, color: '#334155', marginTop: 10 }}>Running individual evaluations then head-to-head comparison · May take 1–2 minutes</p>}
@@ -258,7 +270,7 @@ export default function Ranking() {
                 <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 4 }}>Ranked Shortlist</h1>
                 <p style={{ fontSize: 14, color: '#475569' }}>{results.length} candidates · head-to-head analysis complete</p>
               </div>
-              <button onClick={() => { setResults(null); setResumeFiles([]); setJdFile(null) }}
+              <button onClick={() => { setResults(null); setResumeFiles([]); setJdFile(null); setJdText('') }}
                 style={{ fontSize: 13, padding: '8px 20px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: '#94A3B8', cursor: 'pointer' }}>
                 New Ranking
               </button>
